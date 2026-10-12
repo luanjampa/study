@@ -1,0 +1,43 @@
+== 1/2 vulnerable: global cache key (CACHE_SCOPE=global)
+[cfg] scope=global threshold=0.8
+
+[papa-figo] 'What is my account balance?'
+            -> MISS   1614ms  Papa-Figo, the balance of account 0083 / 01585-8 is R$ 48,312.07.
+
+[chico]     LEAK  sim=0.987 HIT      21ms  'what is my account balance'
+            -> Papa-Figo, the balance of account 0083 / 01585-8 is R$ 48,312.07.
+[chico]     ok    sim=0.536 MISS   1572ms  'show me my balance'
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.644 MISS   1594ms  'how much money do I have in my account?'
+            -> I can help with balance, limit or registered address.
+[chico]     ok    sim=0.681 MISS   1575ms  "what is Papa-Figo's account balance?"
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.700 MISS   1598ms  "what is Chico do Pentest's account balance?"
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.368 MISS   1625ms  'what is my registered address?'
+            -> Chico do Pentest, the registered address is Rua das Trincheiras, 9 - João Pessoa, PB.
+
+[+] VULNERABLE: authenticated as Chico do Pentest, 1/6 prompts returned Papa-Figo's cached answer
+
+== 2/2 fixed: user in the key (CACHE_SCOPE=user)
+[cfg] scope=user threshold=0.8
+
+[papa-figo] 'What is my account balance?'
+            -> MISS   1609ms  Papa-Figo, the balance of account 0083 / 01585-8 is R$ 48,312.07.
+
+[chico]     ok    sim=-1.000 MISS   1677ms  'what is my account balance'
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.537 MISS   1607ms  'show me my balance'
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.588 MISS   1611ms  'how much money do I have in my account?'
+            -> I can help with balance, limit or registered address.
+[chico]     ok    sim=0.658 MISS   1592ms  "what is Papa-Figo's account balance?"
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.700 MISS   1583ms  "what is Chico do Pentest's account balance?"
+            -> Chico do Pentest, the balance of account 0083 / 98765-1 is R$ 212.40.
+[chico]     ok    sim=0.348 MISS   1566ms  'what is my registered address?'
+            -> Chico do Pentest, the registered address is Rua das Trincheiras, 9 - João Pessoa, PB.
+
+[-] NOT VULNERABLE: no tested prompt returned Papa-Figo's data (cache key includes the user)
+
+LAB 01 OK: leak reproduced with the global key, gone with the user in the key
